@@ -1,0 +1,5 @@
+*.out
+tests/*
+!tests/*.nims
+!tests/*.nim
+
