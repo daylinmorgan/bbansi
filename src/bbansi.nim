@@ -17,7 +17,14 @@ proc bb*(s: string): string =
 
   while i < s.len:
     # start extracting pattern when you see '[' but not '[['
-    if s[i] == '[' and preChar notin {'\\','['} and s[i+1] != '[':
+    if s[i] == '\\':
+      inc i
+      if s[i] == '[':
+        result.add s[i]
+        inc i
+        continue
+
+    if s[i] == '[' and preChar != '\\':
       inc i
       while i < s.len and s[i] != ']':
         preChar = s[i]
