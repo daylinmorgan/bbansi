@@ -27,7 +27,7 @@ proc bb*(s: string): string =
       if noColor:
         inc i
         continue
-      if pattern == "reset":
+      if pattern in ["reset","/"]:
         result.add bbReset
         addReset = false
       else:
@@ -51,4 +51,4 @@ when isMainModule:
   echo bb"[bold red]bold red"
   echo bb"[bold red]bold red[reset] no more red" 
   echo bb"[unknown]this text is red no?"
-  echo bb"\[red] <- not a pattern [[red] <- also not a pattern"
+  echo bb"\[red] <- not a pattern "

@@ -14,5 +14,8 @@ test "basic":
   check "Unknown Style" == bb"[unknown]Unknown Style"
   check "\e[1m\e[31mBold Red Text\e[0m" == bb"[bold red]Bold Red Text"
   check "\e[1m\e[31mBold Red Text\e[0mPlain Text" == bb"[bold red]Bold Red Text[reset]Plain Text"
+  check "\e[1mBold\e[0m Not Bold" == bb"[bold]Bold[/] Not Bold"
   # not sure how rich handles this
-  check "[red] ignored pattern" == bb"[[red] ignored pattern"
+  
+test "escaped":
+  check "[red] ignored pattern" == bb"\[red] ignored pattern"
