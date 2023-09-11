@@ -1,5 +1,6 @@
 # bbansi todo's
 
+- [ ] make unknown style error with compile time flag
 - [ ] use an actual type and `$` mechanism
 - [ ] add better escaping mechanism for bracketed text
 - [ ] add support for custom 1-256 numbers and 8-bit numbers and truecolor

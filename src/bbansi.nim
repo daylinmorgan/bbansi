@@ -53,9 +53,47 @@ proc bb*(s: string): string =
     result.add "\e[0m"
 
 when isMainModule:
-  echo bb"[bold]bold"
-  echo bb"[red]red"
-  echo bb"[bold red]bold red"
-  echo bb"[bold red]bold red[reset] no more red" 
-  echo bb"[unknown]this text is red no?"
-  echo bb"\[red] <- not a pattern "
+  import std/[strformat, parseopt]
+  const version = staticExec "git describe --tags --always --dirty=-dev"
+  let help = &"""
+{bb"[bold]bbansi[/] [green]<args>[/] [black]<-h|-v>[/]"}
+
+usage:
+  bbansi "[yellow] yellow text!"
+    |-> {bb"[yellow] yellow text!"}
+  bbansi "[bold red] bold red[/] plain text..." 
+    |-> {bb"[bold red] bold red text[/] plain text..."}
+"""
+  proc writeHelp() =
+    echo help
+    quit(QuitSuccess)
+  proc writeVersion() =
+    echo "bbansi version -> ", version
+    quit(QuitSuccess)
+  var strArgs: seq[string]
+  var p = initOptParser()
+  for kind, key, val in p.getopt():
+    case kind:
+    of cmdEnd: break
+    of cmdShortOption, cmdLongOption:
+      case key:
+        of "help", "h": writeHelp()
+        of "version","v": writeVersion()
+        else:
+          echo bb"[red]ERROR[/]: unexpected option/value -> ", key, ", ", val
+          echo "Option and value: ", key, ", ", val
+
+    of cmdArgument:
+      strArgs.add key
+
+  if strArgs.len != 0:
+    for arg in strArgs:
+      echo arg.bb
+  else:
+    echo "[bold]---------------------".bb
+    echo bb"[bold]bold"
+    echo bb"[red]red"
+    echo bb"[bold red]bold red"
+    echo bb"[bold red]bold red[reset] no more red" 
+    echo bb"[unknown]this text is red no?"
+    echo bb"\[red] <- not a pattern "

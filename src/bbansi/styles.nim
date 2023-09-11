@@ -5,6 +5,7 @@ export strtabs
 
 let bbReset* ="\e[0m"
 
+# should these be an enum?
 let
   codeMap* = {
     "reset":"0",
