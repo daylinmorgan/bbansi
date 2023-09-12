@@ -122,6 +122,9 @@ proc bb*(s: string): BbString =
         next
   result.closeFinalSpan
 
+proc bb*(s: string, style: string): BbString =
+  bb("[" & style & "]" & s & "[/" & style & "]")
+
 proc `&`*(x: BbString, y: BbString): Bbstring =
   # there is probably a more efficient way to do this
   bb(x.raw & y.raw)
@@ -172,8 +175,3 @@ flags:
     quit(QuitSuccess)
   for arg in strArgs:
     echo arg.bb
-
-  echo "---------->"
-  echo "\e[31mRed Text\e[0m\nNext Line"
-  echo "[red]Red Text[/red]\nNext Line".bb
-  echo "---------->"
