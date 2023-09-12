@@ -12,7 +12,7 @@ type
     italic,
     underline,
     blink,
-    reverse,
+    reverse=7,
     conceal,
     strike,
     black = 30
