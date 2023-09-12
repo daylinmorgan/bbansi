@@ -134,6 +134,7 @@ proc `&`*(x: BbString, y: BbString): Bbstring =
 when isMainModule:
   import std/[strformat, parseopt]
   const version = staticExec "git describe --tags --always --dirty=-dev"
+  const longOptPad = 8
   let help = &"""
 {bb"[bold]bbansi[/] \[[green]args...[/]] [faint][[-h,-v][/]"}
 
@@ -142,12 +143,16 @@ when isMainModule:
     |-> {bb"[yellow] yellow text!"}
   bbansi "[bold red] bold red text[/] plain text..." 
     |-> {bb"[bold red] bold red text[/] plain text..."}
+  bbansi "[red]some red[/red] but all bold" --style:bold
+    |-> {"[red]some red[/red] but all bold".bb("bold")}
 
 flags:
   """ & $(bb(collect(for (s, l, d) in [
         ("h", "help", "show this help"),
-        ("v", "version", "show version")]:
-        &"[yellow]-{s}[/]  [green]--{l.alignLeft(8)}[/] {d}").join("\n  ")
+        ("v", "version", "show version"),
+        ("s", "style", "set style for string")
+        ]:
+        &"[yellow]-{s}[/]  [green]--{l.alignLeft(longOptPad)}[/] {d}").join("\n  ")
         ))
   proc writeHelp() =
     echo help
@@ -155,7 +160,10 @@ flags:
   proc writeVersion() =
     echo bb(&"[yellow]bbansi version[/][red] ->[/] [bold]{version}[/]")
     quit(QuitSuccess)
-  var strArgs: seq[string]
+  var
+    strArgs: seq[string]
+    style: string
+    showDebug: bool
   var p = initOptParser()
   for kind, key, val in p.getopt():
     case kind:
@@ -164,6 +172,8 @@ flags:
       case key:
         of "help", "h": writeHelp()
         of "version", "v": writeVersion()
+        of "style", "s": style = val
+        of "debug": showDebug = true
         else:
           echo bb"[red]ERROR[/]: unexpected option/value -> ", key, ", ", val
           echo "Option and value: ", key, ", ", val
@@ -174,4 +184,11 @@ flags:
     echo help
     quit(QuitSuccess)
   for arg in strArgs:
-    echo arg.bb
+    let styled = 
+      if style != "":
+        arg.bb(style)
+      else: arg.bb
+    echo styled
+    if showDebug:
+      echo debug(styled)
+
