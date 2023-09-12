@@ -132,7 +132,7 @@ when isMainModule:
   import std/[strformat, parseopt]
   const version = staticExec "git describe --tags --always --dirty=-dev"
   let help = &"""
-{bb"[bold]bbansi[/] \[[green]args...[/]] [faint]\[-h|-v][/]"}
+{bb"[bold]bbansi[/] \[[green]args...[/]] [faint][[-h,-v][/]"}
 
 {bb"[italic]usage"}:
   bbansi "[yellow] yellow text!"
@@ -144,7 +144,7 @@ flags:
   """ & $(bb(collect(for (s, l, d) in [
         ("h", "help", "show this help"),
         ("v", "version", "show version")]:
-        &"[yellow]-{s}[/]  [green]--{l.alignLeft(8)}[/] | {d}").join("\n  ")
+        &"[yellow]-{s}[/]  [green]--{l.alignLeft(8)}[/] {d}").join("\n  ")
         ))
   proc writeHelp() =
     echo help
