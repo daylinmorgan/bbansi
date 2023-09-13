@@ -9,31 +9,38 @@ import std/unittest
 
 import bbansi
 
+template bbCheck(input: string, output: string): untyped =
+  check $bb(input) == output
+
 suite "basic":
   test "simple":
-    check "\e[31mRed Text\e[0m" == $bb"[red]Red Text"
-    check "\e[33mYellow Text\e[0m" == $bb"[yellow]Yellow Text"
-    check "\e[1m\e[31mBold Red Text\e[0m" == $bb"[bold red]Bold Red Text"
+    bbCheck "[red]red text", "\e[31mred text\e[0m"
+    bbCheck "[red]Red Text", "\e[31mRed Text\e[0m"
+    bbCheck "[yellow]Yellow Text","\e[33mYellow Text\e[0m"
+    bbCheck "[bold red]Bold Red Text", "\e[1m\e[31mBold Red Text\e[0m"
 
   test "closing":
-    check "\e[1mBold\e[0m\e[1m\e[31m Bold Red\e[0m\e[1m Bold Only\e[0m" ==
-      $bb"[bold]Bold[red] Bold Red[/red] Bold Only"
+    bbCheck "[bold]Bold[red] Bold Red[/red] Bold Only",
+      "\e[1mBold\e[0m\e[1m\e[31m Bold Red\e[0m\e[1m Bold Only\e[0m" 
 
   test "abbreviated":
-    check "\e[1mBold\e[0m Not Bold" == $bb"[b]Bold[/] Not Bold"
+    bbCheck "[b]Bold[/] Not Bold", "\e[1mBold\e[0m Not Bold"
 
   test "noop":
-    check "No Style" == $bb"No Style"
-    check "Unknown Style" == $bb"[unknown]Unknown Style"
+    bbCheck "No Style", "No Style"
+    bbCheck "[unknown]Unknown Style", "Unknown Style"
 
   test "escaped":
-    check "[red] ignored pattern" == $"[[red] ignored pattern".bb
+    bbCheck "[[red] ignored pattern","[red] ignored pattern"
 
   test "newlines":
     # Proc Strings: raw strings,
     # but the method name that prefixes the string is called
     # so that foo"12\" -> foo(r"12\")
-    check "\e[31mRed Text\e[0m\nNext Line" == $"[red]Red Text[/]\nNext Line".bb
+    bbCheck "[red]Red Text[/]\nNext Line", "\e[31mRed Text\e[0m\nNext Line"
+
+  test "on color":
+    bbCheck "[red on yellow]Red on Yellow", "\e[31m\e[43mRed on Yellow\e[0m"
 
   test "concat-ops":
     check "[red]RED[/]".bb & " plain string" == "[red]RED[/] plain string".bb
