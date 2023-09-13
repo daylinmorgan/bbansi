@@ -1,6 +1,6 @@
 bin/
 *.out
-tests/*
-!tests/*.nims
-!tests/*.nim
 
+tests/*
+!tests/*.nim
+!tests/*.nims

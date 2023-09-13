@@ -5,7 +5,7 @@
 #
 # To run these tests, simply execute `nimble test`.
 
-import std/[strutils,unittest]
+import std/unittest
 
 import bbansi
 
