@@ -3,7 +3,7 @@ import std/[strtabs, strutils]
 let bbReset* = "\e[0m"
 
 let
-  bbStyles = {
+  bbStyles* = {
    "bold": "1",
    "b": "1",
    "faint": "2",
@@ -15,9 +15,10 @@ let
    "reverse": "7",
    "conceal": "8",
    "strike": "9",
+
     }.newStringTable(modeCaseInsensitive)
 
-  bbColors = {
+  bbColors* = {
     "black": "0",
     "red": "1",
     "green": "2",
@@ -32,8 +33,8 @@ proc toAnsiCode*(s: string): string =
   var
     styles: seq[string]
     bgStyle: string
-  if " on " in s:
-    let fgBgSplit = s.rsplit(" on ", maxsplit = 1)
+  if " on " in s or s.startswith("on"):
+    let fgBgSplit = s.rsplit("on", maxsplit = 1)
     styles = fgBgSplit[0].splitWhitespace()
     bgStyle = fgBgSplit[1].strip()
   else:

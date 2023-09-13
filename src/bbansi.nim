@@ -153,6 +153,19 @@ flags:
         &"[yellow]-{s}[/]  [green]--{l.alignLeft(longOptPad)}[/] {d}").join("\n  ")
     ))
 
+  proc testCard =
+    for style in [
+        "bold", "faint", "italic", "underline",
+        "blink", "reverse", "conceal", "strike"]:
+      echo style, " -> ", bb(&"[{style}]****")
+    const colors = [
+      "black", "red", "green", "yellow",
+      "blue", "magenta", "cyan", "white", ]
+    for color in colors:
+      echo color, " -> ", bb(&"[{color}]****")
+    for color in colors:
+      echo "on ", color, " -> ", bb(&"[ on {color}]****")
+
   proc debug(bbs: BbString): string =
     echo "bbString("
     echo "  raw: ", bbs.raw
@@ -179,6 +192,7 @@ flags:
       case key:
         of "help", "h": writeHelp()
         of "version", "v": writeVersion()
+        of "testCard": testCard(); quit(QuitSuccess)
         of "style", "s":
           if val == "":
             echo "[red]ERROR[/]: expected value for -s/--style".bb
