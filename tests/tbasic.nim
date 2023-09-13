@@ -38,10 +38,12 @@ suite "basic":
   test "concat-ops":
     check "[red]RED[/]".bb & " plain string" == "[red]RED[/] plain string".bb
     check "[red]RED[/]".bb.len == 3
-    check bb("[blue]Blue[/]") & " " & bb("[red]Red[/]") == "[blue]Blue[/] [red]Red[/]".bb
-    check "a plain string" & "[blue] a blue string".bb == "a plain string[blue] a blue string".bb
+    check bb("[blue]Blue[/]") & " " & bb("[red]Red[/]") ==
+        "[blue]Blue[/] [red]Red[/]".bb
+    check "a plain string" & "[blue] a blue string".bb ==
+        "a plain string[blue] a blue string".bb
 
   test "style full":
-    check "[red]Red[/red]".bb == bb("Red","red")
-    check "[b][yellow]not yellow[/][/b]".bb == bb("[yellow]not yellow[/]","b")
+    check "[red]Red[/red]".bb == bb("Red", "red")
+    check "[b][yellow]not yellow[/][/b]".bb == bb("[yellow]not yellow[/]", "b")
 

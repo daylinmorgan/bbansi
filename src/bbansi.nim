@@ -22,13 +22,13 @@ proc `&`*(x: BbString, y: string): BbString =
 proc `&`*(x: string, y: BbString): BbString =
   result.raw = x & y.raw
   result.plain = x & y.plain
-  result.spans.add BbSpan(styles: @[],slice: [0, x.len-1] )
+  result.spans.add BbSpan(styles: @[], slice: [0, x.len-1])
   for span in y.spans:
     let
       length = x.len
       styles = span.styles
       slice = span.slice
-    result.spans.add BbSpan(styles: styles, slice: [slice[0]+length,slice[1]+length])
+    result.spans.add BbSpan(styles: styles, slice: [slice[0]+length, slice[1]+length])
 
 func len*(bbs: BbString): int = bbs.plain.len
 
@@ -151,7 +151,7 @@ flags:
         ("s", "style", "set style for string")
         ]:
         &"[yellow]-{s}[/]  [green]--{l.alignLeft(longOptPad)}[/] {d}").join("\n  ")
-        ))
+    ))
 
   proc debug(bbs: BbString): string =
     echo "bbString("
@@ -179,7 +179,7 @@ flags:
       case key:
         of "help", "h": writeHelp()
         of "version", "v": writeVersion()
-        of "style", "s": 
+        of "style", "s":
           if val == "":
             echo "[red]ERROR[/]: expected value for -s/--style".bb
             quit(QuitFailure)
@@ -193,7 +193,7 @@ flags:
     echo help
     quit(QuitSuccess)
   for arg in strArgs:
-    let styled = 
+    let styled =
       if style != "":
         arg.bb(style)
       else: arg.bb
