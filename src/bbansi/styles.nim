@@ -1,58 +1,50 @@
-
 import std/[strtabs, strutils]
-
-export strtabs
 
 let bbReset* = "\e[0m"
 
-type
-  BbStyle = enum
-    bold = 1,
-    faint,
-    italic,
-    underline,
-    blink,
-    reverse=7,
-    conceal,
-    strike,
-    black = 30
-    red,
-    green,
-    yellow,
-    blue,
-    magenta,
-    cyan,
-    white
+let
+  bbStyles = {
+   "bold": "1",
+   "b": "1",
+   "faint": "2",
+   "italic": "3",
+   "i": "3",
+   "underline": "4",
+   "u": "4",
+   "blink": "5",
+   "reverse": "7",
+   "conceal": "8",
+   "strike": "9",
+    }.newStringTable(modeCaseInsensitive)
 
+  bbColors = {
+    "black": "0",
+    "red": "1",
+    "green": "2",
+    "yellow": "3",
+    "blue": "4",
+    "magenta": "5",
+    "cyan": "6",
+    "white": "7",
+    }.newStringTable(modeCaseInsensitive)
 
 proc toAnsiCode*(s: string): string =
-  var 
+  var
     styles: seq[string]
     bgStyle: string
   if " on " in s:
-    let fg_bg_split = s.rsplit(" on ", maxsplit=1)
-    styles = fg_bg_split[0].splitWhitespace()
-    bgStyle = fg_bg_split[1].strip()
+    let fgBgSplit = s.rsplit(" on ", maxsplit = 1)
+    styles = fgBgSplit[0].splitWhitespace()
+    bgStyle = fgBgSplit[1].strip()
   else:
     styles = s.splitWhitespace()
   for style in styles:
-    try:
-      var bbStyle: BbStyle
-      if style.len == 1:
-        bbstyle = parseEnum[BbStyle](
-          case style:
-          of "b": "bold"
-          of "i": "italic"
-          of "u": "underline"
-          else: "" # this parse enum lookup is unneccesary
-        )
-      else:
-        bbstyle = parseEnum[BbStyle](style)
-      # if we fail to parse treat it like a noop..
-      result.add "\e[" & $bbStyle.ord() & "m"
-    except ValueError: discard
-    try:
-      let bbStyle = parseEnum[BbStyle](bgStyle)
-      result.add "\e[" & $(bbStyle.ord()+10) & "m"
-    except ValueError: discard
+    if style in bbStyles:
+      result.add "\e[" & bbStyles[style] & "m"
+    elif style in bbColors:
+      result.add "\e[3" & bbColors[style] & "m"
+
+  let style = bgStyle
+  if style in bbColors:
+    result.add "\e[4" & bbColors[style] & "m"
 
