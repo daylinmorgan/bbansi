@@ -179,12 +179,14 @@ flags:
       case key:
         of "help", "h": writeHelp()
         of "version", "v": writeVersion()
-        of "style", "s": style = val
+        of "style", "s": 
+          if val == "":
+            echo "[red]ERROR[/]: expected value for -s/--style".bb
+            quit(QuitFailure)
+          style = val
         of "debug": showDebug = true
         else:
-          echo bb"[red]ERROR[/]: unexpected option/value -> ", key, ", ", val
-          echo "Option and value: ", key, ", ", val
-
+          echo bb"[yellow]warning[/]: unexpected option/value -> ", key, ", ", val
     of cmdArgument:
       strArgs.add key
   if strArgs.len == 0:
