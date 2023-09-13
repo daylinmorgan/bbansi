@@ -13,13 +13,6 @@ type
     plain: string
     spans: seq[BbSpan]
 
-proc debug(bbs: BbString): string =
-  echo "bbString("
-  echo "  raw: ", bbs.raw
-  echo "  plain: ", bbs.plain
-  echo "  spans: ", bbs.spans
-  echo ")"
-
 proc `&`*(x: BbString, y: string): BbString =
   result = x
   result.raw &= y
@@ -129,6 +122,11 @@ proc `&`*(x: BbString, y: BbString): Bbstring =
   # there is probably a more efficient way to do this
   bb(x.raw & y.raw)
 
+proc bbEcho*(args: varargs[string, `$`]) {.sideEffect.} =
+  for x in args:
+    stdout.write(x.bb)
+  stdout.write('\n')
+  stdout.flushFile
 
 # ---- cli
 when isMainModule:
@@ -154,6 +152,15 @@ flags:
         ]:
         &"[yellow]-{s}[/]  [green]--{l.alignLeft(longOptPad)}[/] {d}").join("\n  ")
         ))
+
+  proc debug(bbs: BbString): string =
+    echo "bbString("
+    echo "  raw: ", bbs.raw
+    echo "  plain: ", bbs.plain
+    echo "  spans: ", bbs.spans
+    echo "  escaped: ", escape($bbs)
+    echo ")"
+
   proc writeHelp() =
     echo help
     quit(QuitSuccess)
