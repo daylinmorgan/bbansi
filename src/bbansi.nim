@@ -128,43 +128,42 @@ proc bbEcho*(args: varargs[string, `$`]) {.sideEffect.} =
   stdout.write('\n')
   stdout.flushFile
 
-# ---- cli
 when isMainModule:
   import std/[strformat, parseopt]
   const version = staticExec "git describe --tags --always --dirty=-dev"
   const longOptPad = 8
-  let help = &"""
-{bb"[bold]bbansi[/] \[[green]args...[/]] [faint][[-h,-v][/]"}
+  let help = fmt"""
+[bold]bbansi[/] \[[green]args...[/]] [faint][[-h,-v][/]
 
-{bb"[italic]usage"}:
-  bbansi "[yellow] yellow text!"
-    |-> {bb"[yellow] yellow text!"}
-  bbansi "[bold red] bold red text[/] plain text..." 
-    |-> {bb"[bold red] bold red text[/] plain text..."}
-  bbansi "[red]some red[/red] but all bold" --style:bold
-    |-> {"[red]some red[/red] but all bold".bb("bold")}
+[italic]usage[/]:
+  bbansi "[[yellow] yellow text!"
+    |-> [yellow] yellow text![/]
+  bbansi "[[bold red] bold red text[[/] plain text..."
+    |-> [bold red] bold red text[/] plain text...
+  bbansi "[[red]some red[[/red] but all italic" --style:italic
+    |-> [italic][red]some red[/red] but all italic[/italic]
 
 flags:
-  """ & $(bb(collect(for (s, l, d) in [
+  """.bb & $(bb(collect(for (s, l, d) in [
         ("h", "help", "show this help"),
         ("v", "version", "show version"),
         ("s", "style", "set style for string")
         ]:
-        &"[yellow]-{s}[/]  [green]--{l.alignLeft(longOptPad)}[/] {d}").join("\n  ")
+        fmt"[yellow]-{s}[/]  [green]--{l.alignLeft(longOptPad)}[/] {d}").join("\n  ")
     ))
 
   proc testCard =
     for style in [
         "bold", "faint", "italic", "underline",
         "blink", "reverse", "conceal", "strike"]:
-      echo style, " -> ", bb(&"[{style}]****")
+      echo style, " -> ", fmt"[{style}]****".bb
     const colors = [
       "black", "red", "green", "yellow",
       "blue", "magenta", "cyan", "white", ]
     for color in colors:
-      echo color, " -> ", bb(&"[{color}]****")
+      echo color, " -> ", fmt"[{color}]****".bb
     for color in colors:
-      echo "on ", color, " -> ", bb(&"[ on {color}]****")
+      echo "on ", color, " -> ", fmt"[on {color}]****".bb
 
   proc debug(bbs: BbString): string =
     echo "bbString("
@@ -178,7 +177,7 @@ flags:
     echo help
     quit(QuitSuccess)
   proc writeVersion() =
-    echo bb(&"[yellow]bbansi version[/][red] ->[/] [bold]{version}[/]")
+    echo fmt"[yellow]bbansi version[/][red] ->[/] [bold]{version}[/]".bb
     quit(QuitSuccess)
   var
     strArgs: seq[string]
