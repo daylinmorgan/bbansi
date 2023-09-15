@@ -15,7 +15,6 @@ let
    "reverse": "7",
    "conceal": "8",
    "strike": "9",
-
     }.newStringTable(modeCaseInsensitive)
 
   bbColors* = {
@@ -31,6 +30,7 @@ let
 
 proc toAnsiCode*(s: string): string =
   var
+    codes: seq[string]
     styles: seq[string]
     bgStyle: string
   if " on " in s or s.startswith("on"):
@@ -41,11 +41,14 @@ proc toAnsiCode*(s: string): string =
     styles = s.splitWhitespace()
   for style in styles:
     if style in bbStyles:
-      result.add "\e[" & bbStyles[style] & "m"
+      codes.add bbStyles[style]
     elif style in bbColors:
-      result.add "\e[3" & bbColors[style] & "m"
+      codes.add "3" & bbColors[style]
+  if bgStyle in bbColors:
+    codes.add "4" & bbColors[bgStyle]
 
-  let style = bgStyle
-  if style in bbColors:
-    result.add "\e[4" & bbColors[style] & "m"
+  if codes.len > 0:
+    result.add "\e["
+    result.add codes.join ";"
+    result.add "m"
 

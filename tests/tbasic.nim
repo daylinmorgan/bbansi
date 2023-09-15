@@ -17,7 +17,7 @@ suite "basic":
     bbCheck "[red]red text", "\e[31mred text\e[0m"
     bbCheck "[red]Red Text", "\e[31mRed Text\e[0m"
     bbCheck "[yellow]Yellow Text","\e[33mYellow Text\e[0m"
-    bbCheck "[bold red]Bold Red Text", "\e[1m\e[31mBold Red Text\e[0m"
+    bbCheck "[bold red]Bold Red Text", "\e[1;31mBold Red Text\e[0m"
 
   test "closing":
     bbCheck "[bold]Bold[red] Bold Red[/red] Bold Only",
@@ -40,7 +40,7 @@ suite "basic":
     bbCheck "[red]Red Text[/]\nNext Line", "\e[31mRed Text\e[0m\nNext Line"
 
   test "on color":
-    bbCheck "[red on yellow]Red on Yellow", "\e[31m\e[43mRed on Yellow\e[0m"
+    bbCheck "[red on yellow]Red on Yellow", "\e[31;43mRed on Yellow\e[0m"
 
   test "concat-ops":
     check "[red]RED[/]".bb & " plain string" == "[red]RED[/] plain string".bb
