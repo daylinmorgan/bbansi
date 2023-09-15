@@ -16,12 +16,12 @@ suite "basic":
   test "simple":
     bbCheck "[red]red text", "\e[31mred text\e[0m"
     bbCheck "[red]Red Text", "\e[31mRed Text\e[0m"
-    bbCheck "[yellow]Yellow Text","\e[33mYellow Text\e[0m"
+    bbCheck "[yellow]Yellow Text", "\e[33mYellow Text\e[0m"
     bbCheck "[bold red]Bold Red Text", "\e[1;31mBold Red Text\e[0m"
 
   test "closing":
     bbCheck "[bold]Bold[red] Bold Red[/red] Bold Only",
-      "\e[1mBold\e[0m\e[1m\e[31m Bold Red\e[0m\e[1m Bold Only\e[0m" 
+      "\e[1mBold\e[0m\e[1;31m Bold Red\e[0m\e[1m Bold Only\e[0m"
 
   test "abbreviated":
     bbCheck "[b]Bold[/] Not Bold", "\e[1mBold\e[0m Not Bold"
@@ -31,7 +31,7 @@ suite "basic":
     bbCheck "[unknown]Unknown Style", "Unknown Style"
 
   test "escaped":
-    bbCheck "[[red] ignored pattern","[red] ignored pattern"
+    bbCheck "[[red] ignored pattern", "[red] ignored pattern"
 
   test "newlines":
     # Proc Strings: raw strings,

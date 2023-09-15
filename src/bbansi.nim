@@ -13,6 +13,8 @@ type
     plain: string
     spans: seq[BbSpan]
 
+proc len(span: BbSpan): int = span.slice[1] - span.slice[0]
+
 proc `&`*(x: BbString, y: string): BbString =
   result = x
   result.raw &= y
@@ -36,9 +38,11 @@ proc `$`*(bbs: BbString): string =
   if noColor: return bbs.plain
 
   for span in bbs.spans:
+    if span.len == 0:
+      continue
     var codes = ""
     if span.styles.len > 0:
-      codes = collect(for style in span.styles: style.toAnsiCode).join("")
+      codes = span.styles.join(" ").toAnsiCode
 
     result.add codes
     result.add bbs.plain[span.slice[0]..span.slice[1]]
@@ -47,7 +51,8 @@ proc `$`*(bbs: BbString): string =
       result.add bbReset
 
 proc endSpan(bbs: var BbString) =
-  bbs.spans[^1].slice[1] = bbs.plain.len-1
+  if bbs.plain.len != 0:
+    bbs.spans[^1].slice[1] = bbs.plain.len-1
 
 proc newSpan(bbs: var BbString, pattern: string) =
   bbs.spans.add BbSpan(styles: @[pattern], slice: [bbs.plain.len, 0])

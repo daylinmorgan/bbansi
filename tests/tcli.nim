@@ -19,5 +19,5 @@ suite "cli":
     check execCmdEx(cmd).exitCode == 0
   test "simple":
     check "\e[31mRed\e[0m" == cliRun "[red]Red[/]"
-    check "\e[1m\e[0m\e[1m\e[31mRed\e[0m\e[1m Not Red but Bold\e[0m" ==
+    check "\e[1;31mRed\e[0m\e[1m Not Red but Bold\e[0m" ==
         cliRun "'[red]Red[/] Not Red but Bold' " & "--style:bold"
