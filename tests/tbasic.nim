@@ -34,9 +34,6 @@ suite "basic":
     bbCheck "[[red] ignored pattern", "[red] ignored pattern"
 
   test "newlines":
-    # Proc Strings: raw strings,
-    # but the method name that prefixes the string is called
-    # so that foo"12\" -> foo(r"12\")
     bbCheck "[red]Red Text[/]\nNext Line", "\e[31mRed Text\e[0m\nNext Line"
 
   test "on color":
@@ -49,6 +46,9 @@ suite "basic":
         "[blue]Blue[/] [red]Red[/]".bb
     check "a plain string" & "[blue] a blue string".bb ==
         "a plain string[blue] a blue string".bb
+
+  test "case":
+    bbCheck "[red]no case sensitivity[/RED]", "\e[31mno case sensitivity\e[0m"
 
   test "style full":
     check "[red]Red[/red]".bb == bb("Red", "red")

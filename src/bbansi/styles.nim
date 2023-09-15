@@ -1,8 +1,8 @@
-import std/[strtabs, strutils]
+import std/[strutils, tables]
 
 let bbReset* = "\e[0m"
 
-let
+const
   bbStyles = {
    "bold": "1",
    "b": "1",
@@ -15,7 +15,7 @@ let
    "reverse": "7",
    "conceal": "8",
    "strike": "9",
-    }.newStringTable(modeCaseInsensitive)
+    }.toTable
 
   bbColors = {
     "black": "0",
@@ -26,7 +26,7 @@ let
     "magenta": "5",
     "cyan": "6",
     "white": "7",
-    }.newStringTable(modeCaseInsensitive)
+    }.toTable
 
 proc toAnsiCode*(s: string): string =
   var
@@ -35,8 +35,8 @@ proc toAnsiCode*(s: string): string =
     bgStyle: string
   if " on " in s or s.startswith("on"):
     let fgBgSplit = s.rsplit("on", maxsplit = 1)
-    styles = fgBgSplit[0].splitWhitespace()
-    bgStyle = fgBgSplit[1].strip()
+    styles = fgBgSplit[0].toLowerAscii().splitWhitespace()
+    bgStyle = fgBgSplit[1].strip().toLowerAscii()
   else:
     styles = s.splitWhitespace()
   for style in styles:
