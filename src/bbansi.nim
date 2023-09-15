@@ -15,68 +15,33 @@ type
 
 proc len(span: BbSpan): int = span.slice[1] - span.slice[0]
 
-proc `&`*(x: BbString, y: string): BbString =
-  result = x
-  result.raw &= y
-  result.plain &= y
-  result.spans[^1].slice[1] = result.plain.len-1
-
-proc `&`*(x: string, y: BbString): BbString =
-  result.raw = x & y.raw
-  result.plain = x & y.plain
-  result.spans.add BbSpan(styles: @[], slice: [0, x.len-1])
-  for span in y.spans:
-    let
-      length = x.len
-      styles = span.styles
-      slice = span.slice
-    result.spans.add BbSpan(styles: styles, slice: [slice[0]+length, slice[1]+length])
-
-func len*(bbs: BbString): int = bbs.plain.len
-
-proc `$`*(bbs: BbString): string =
-  if noColor: return bbs.plain
-
-  for span in bbs.spans:
-    if span.len == 0:
-      continue
-    var codes = ""
-    if span.styles.len > 0:
-      codes = span.styles.join(" ").toAnsiCode
-
-    result.add codes
-    result.add bbs.plain[span.slice[0]..span.slice[1]]
-
-    if codes != "":
-      result.add bbReset
-
 proc endSpan(bbs: var BbString) =
   if bbs.plain.len != 0:
     bbs.spans[^1].slice[1] = bbs.plain.len-1
 
-proc newSpan(bbs: var BbString, pattern: string) =
-  bbs.spans.add BbSpan(styles: @[pattern], slice: [bbs.plain.len, 0])
+proc newSpan(bbs: var BbString, styles: seq[string] = @[]) =
+  bbs.spans.add BbSpan(styles: styles, slice: [bbs.plain.len, 0])
 
 proc resetSpan(bbs: var BbString) =
   bbs.endSpan
-  bbs.spans.add BbSpan(styles: @[], slice: [bbs.plain.len, 0])
+  bbs.newSpan
 
 proc closeLastStyle(bbs: var BbString) =
   bbs.endSpan
   let newStyle = bbs.spans[^1].styles[0..^2] # drop the latest style
-  bbs.spans.add BbSpan(styles: newStyle, slice: [bbs.plain.len, 0])
+  bbs.newSpan newStyle
 
 proc addToSpan(bbs: var BbString, pattern: string) =
   bbs.endSpan
   let currStyl = bbs.spans[^1].styles
-  bbs.spans.add BbSpan(styles: currStyl & @[pattern], slice: [bbs.plain.len, 0])
+  bbs.newSpan currStyl & @[pattern]
 
 proc closeStyle(bbs: var BbString, pattern: string) =
   let style = pattern[1..^1].strip()
   if style in bbs.spans[^1].styles:
     bbs.endSpan
     let newStyle = bbs.spans[^1].styles.filterIt(it != style) # use sets instead
-    bbs.spans.add BbSpan(styles: newStyle, slice: [bbs.plain.len, 0])
+    bbs.newSpan newStyle
 
 proc closeFinalSpan(bbs: var BbString) =
   if bbs.spans.len >= 1 and bbs.spans[^1].slice[1] == 0:
@@ -114,7 +79,7 @@ proc bb*(s: string): BbString =
           elif pattern == "reset": result.resetSpan
           elif pattern.startswith('/'): result.closeStyle pattern
           else: result.addToSpan pattern
-        else: result.newSpan pattern
+        else: result.newSpan @[pattern]
         resetPattern
       else:
         next
@@ -122,6 +87,41 @@ proc bb*(s: string): BbString =
 
 proc bb*(s: string, style: string): BbString =
   bb("[" & style & "]" & s & "[/" & style & "]")
+
+proc `&`*(x: BbString, y: string): BbString =
+  result = x
+  result.raw &= y
+  result.plain &= y
+  result.spans[^1].slice[1] = result.plain.len-1
+
+proc `&`*(x: string, y: BbString): BbString =
+  result.raw = x & y.raw
+  result.plain = x & y.plain
+  result.spans.add BbSpan(styles: @[], slice: [0, x.len-1])
+  for span in y.spans:
+    let
+      length = x.len
+      styles = span.styles
+      slice = span.slice
+    result.spans.add BbSpan(styles: styles, slice: [slice[0]+length, slice[1]+length])
+
+func len*(bbs: BbString): int = bbs.plain.len
+
+proc `$`*(bbs: BbString): string =
+  if noColor: return bbs.plain
+
+  for span in bbs.spans:
+    if span.len == 0:
+      continue
+    var codes = ""
+    if span.styles.len > 0:
+      codes = span.styles.join(" ").toAnsiCode
+
+    result.add codes
+    result.add bbs.plain[span.slice[0]..span.slice[1]]
+
+    if codes != "":
+      result.add bbReset
 
 proc `&`*(x: BbString, y: BbString): Bbstring =
   # there is probably a more efficient way to do this
@@ -138,7 +138,7 @@ when isMainModule:
   const version = staticExec "git describe --tags --always --dirty=-dev"
   const longOptPad = 8
   let help = fmt"""
-[bold]bbansi[/] \[[green]args...[/]] [faint][[-h,-v][/]
+[bold]bbansi[/] \[[green]args...[/]] [[[faint]-h|-v[/]]
 
 [italic]usage[/]:
   bbansi "[[yellow] yellow text!"
