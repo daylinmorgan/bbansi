@@ -3,6 +3,7 @@ import std/[
   os,
   osproc,
   strutils,
+  times,
   unittest
 ]
 
@@ -14,9 +15,12 @@ proc cliRun(cmd: string): string =
 
 suite "cli":
   setup:
-    let cmd = "nim c -o:" & pathToSrc / "bbansi.out " & (pathToSrc / ".." /
-        "src" / "bbansi.nim")
-    check execCmdEx(cmd).exitCode == 0
+    let
+      cli = pathToSrc / "bbansi.out"
+      srcDir = pathToSrc / ".." / "src"
+      cmd = "nim c -o:" & cli & " " & (srcDir / "bbansi.nim")
+    if getFileInfo(cli).lastWriteTime < getFileInfo(srcDir).lastWriteTime:
+      check execCmdEx(cmd).exitCode == 0
   test "simple":
     check "\e[31mRed\e[0m" == cliRun "[red]Red[/]"
     check "\e[1;31mRed\e[0m\e[1m Not Red but Bold\e[0m" ==
