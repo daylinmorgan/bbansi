@@ -3,7 +3,7 @@ import std/[strtabs, strutils]
 let bbReset* = "\e[0m"
 
 let
-  bbStyles* = {
+  bbStyles = {
    "bold": "1",
    "b": "1",
    "faint": "2",
@@ -17,7 +17,7 @@ let
    "strike": "9",
     }.newStringTable(modeCaseInsensitive)
 
-  bbColors* = {
+  bbColors = {
     "black": "0",
     "red": "1",
     "green": "2",
