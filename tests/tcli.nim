@@ -19,7 +19,7 @@ suite "cli":
       cli = pathToSrc / "bbansi.out"
       srcDir = pathToSrc / ".." / "src"
       cmd = "nim c -o:" & cli & " " & (srcDir / "bbansi.nim")
-    if getFileInfo(cli).lastWriteTime < getFileInfo(srcDir).lastWriteTime:
+    if not cli.fileExists or getFileInfo(cli).lastWriteTime < getFileInfo(srcDir).lastWriteTime:
       check execCmdEx(cmd).exitCode == 0
   test "simple":
     check "\e[31mRed\e[0m" == cliRun "[red]Red[/]"
