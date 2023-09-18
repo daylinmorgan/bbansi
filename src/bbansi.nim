@@ -1,5 +1,7 @@
-import std/[os, sequtils, strutils, sugar]
+import std/[os, sequtils, strutils]
+
 import bbansi/styles
+import bbansi/utils
 
 # TODO: add support for some kind of FORCE_COLOR and detect terminals...
 let noColor = os.getEnv("NO_COLOR") != ""
@@ -134,7 +136,7 @@ proc bbEcho*(args: varargs[string, `$`]) {.sideEffect.} =
   stdout.flushFile
 
 when isMainModule:
-  import std/[strformat, parseopt]
+  import std/[parseopt, strformat, sugar]
   const version = staticExec "git describe --tags --always --dirty=-dev"
   const longOptPad = 8
   let help = fmt"""
