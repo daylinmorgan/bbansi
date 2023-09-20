@@ -9,4 +9,4 @@ binDir        = "bin"
 bin           = @["bbansi"]
 
 # Dependencies
-requires "nim >= 1.6.12"
+requires "nim >= 2.0.0"
