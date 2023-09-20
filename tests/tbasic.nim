@@ -5,12 +5,12 @@
 #
 # To run these tests, simply execute `nimble test`.
 
-import std/unittest
+import std/[strutils,unittest]
 
 import bbansi
 
 template bbCheck(input: string, output: string): untyped =
-  check $bb(input) == output
+  check escape($bb(input)) == escape(output)
 
 suite "basic":
   test "simple":
@@ -18,6 +18,8 @@ suite "basic":
     bbCheck "[red]Red Text", "\e[31mRed Text\e[0m"
     bbCheck "[yellow]Yellow Text", "\e[33mYellow Text\e[0m"
     bbCheck "[bold red]Bold Red Text", "\e[1;31mBold Red Text\e[0m"
+    bbCheck "[red]5[/]", "\e[31m5\e[0m"
+    bbCheck "[bold][red]5","\e[1;31m5\e[0m"
 
   test "closing":
     bbCheck "[bold]Bold[red] Bold Red[/red] Bold Only",

@@ -18,8 +18,11 @@ type
 proc len(span: BbSpan): int = span.slice[1] - span.slice[0]
 
 proc endSpan(bbs: var BbString) =
-  if bbs.plain.len != 0:
+  if bbs.spans.len == 0: return
+  if bbs.plain.len >= 1:
     bbs.spans[^1].slice[1] = bbs.plain.len-1
+  if bbs.spans[^1].len == 0 and bbs.plain.len == 0:
+    bbs.spans.delete(bbs.spans.len - 1)
 
 proc newSpan(bbs: var BbString, styles: seq[string] = @[]) =
   bbs.spans.add BbSpan(styles: styles, slice: [bbs.plain.len, 0])
@@ -34,8 +37,8 @@ proc closeLastStyle(bbs: var BbString) =
   bbs.newSpan newStyle
 
 proc addToSpan(bbs: var BbString, pattern: string) =
-  bbs.endSpan
   let currStyl = bbs.spans[^1].styles
+  bbs.endSpan
   bbs.newSpan currStyl & @[pattern]
 
 proc closeStyle(bbs: var BbString, pattern: string) =
@@ -85,6 +88,7 @@ proc bb*(s: string): BbString =
         resetPattern
       else:
         next
+
   result.closeFinalSpan
 
 proc bb*(s: string, style: string): BbString =
@@ -113,8 +117,6 @@ proc `$`*(bbs: BbString): string =
   if noColor: return bbs.plain
 
   for span in bbs.spans:
-    if span.len == 0:
-      continue
     var codes = ""
     if span.styles.len > 0:
       codes = span.styles.join(" ").toAnsiCode
