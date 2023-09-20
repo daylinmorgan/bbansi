@@ -17,7 +17,7 @@ type
 
 proc len(span: BbSpan): int = span.slice[1] - span.slice[0]
 
-proc endSpan(bbs: var BbString) =
+template endSpan(bbs: var BbString) =
   if bbs.spans.len == 0: return
   if bbs.plain.len >= 1:
     bbs.spans[^1].slice[1] = bbs.plain.len-1
@@ -27,28 +27,28 @@ proc endSpan(bbs: var BbString) =
 proc newSpan(bbs: var BbString, styles: seq[string] = @[]) =
   bbs.spans.add BbSpan(styles: styles, slice: [bbs.plain.len, 0])
 
-proc resetSpan(bbs: var BbString) =
+template resetSpan(bbs: var BbString) =
   bbs.endSpan
   bbs.newSpan
 
-proc closeLastStyle(bbs: var BbString) =
+template closeLastStyle(bbs: var BbString) =
   bbs.endSpan
   let newStyle = bbs.spans[^1].styles[0..^2] # drop the latest style
   bbs.newSpan newStyle
 
-proc addToSpan(bbs: var BbString, pattern: string) =
+template addToSpan(bbs: var BbString, pattern: string) =
   let currStyl = bbs.spans[^1].styles
   bbs.endSpan
   bbs.newSpan currStyl & @[pattern]
 
-proc closeStyle(bbs: var BbString, pattern: string) =
+template closeStyle(bbs: var BbString, pattern: string) =
   let style = pattern[1..^1].strip()
   if style in bbs.spans[^1].styles:
     bbs.endSpan
     let newStyle = bbs.spans[^1].styles.filterIt(it != style) # use sets instead
     bbs.newSpan newStyle
 
-proc closeFinalSpan(bbs: var BbString) =
+template closeFinalSpan(bbs: var BbString) =
   if bbs.spans.len >= 1 and bbs.spans[^1].slice[1] == 0:
     bbs.endSpan
 
