@@ -141,7 +141,8 @@ when isMainModule:
   import std/[parseopt, strformat, sugar]
   const version = staticExec "git describe --tags --always --dirty=-dev"
   const longOptPad = 8
-  let help = fmt"""
+  proc writeHelp() =
+    let help = fmt"""
 [bold]bbansi[/] \[[green]args...[/]] [[[faint]-h|-v[/]]
 
 [italic]usage[/]:
@@ -160,6 +161,8 @@ flags:
         ]:
         fmt"[yellow]-{s}[/]  [green]--{l.alignLeft(longOptPad)}[/] {d}").join("\n  ")
     ))
+    echo help
+    quit(QuitSuccess)
 
   proc testCard =
     for style in [
@@ -182,9 +185,7 @@ flags:
     echo "  escaped: ", escape($bbs)
     echo ")"
 
-  proc writeHelp() =
-    echo help
-    quit(QuitSuccess)
+
   proc writeVersion() =
     echo fmt"[yellow]bbansi version[/][red] ->[/] [bold]{version}[/]".bb
     quit(QuitSuccess)
@@ -212,8 +213,7 @@ flags:
     of cmdArgument:
       strArgs.add key
   if strArgs.len == 0:
-    echo help
-    quit(QuitSuccess)
+    writeHelp()
   for arg in strArgs:
     let styled =
       if style != "":
