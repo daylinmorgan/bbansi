@@ -7,13 +7,13 @@ import bbansi/utils
 let noColor = os.getEnv("NO_COLOR") != ""
 
 type
-  BbSpan = object
-    styles: seq[string]
-    slice: array[2, int]
-  BbString = object
-    raw: string
-    plain: string
-    spans: seq[BbSpan]
+  BbSpan* = object
+    styles*: seq[string]
+    slice*: array[2, int]
+  BbString* = object
+    raw*: string
+    plain*: string
+    spans*: seq[BbSpan]
 
 proc len(span: BbSpan): int = span.slice[1] - span.slice[0]
 
